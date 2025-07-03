@@ -62,7 +62,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
         run: |
           sudo apt-get install wget apt-transport-https gnupg lsb-release /
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add - /
