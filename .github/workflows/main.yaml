@@ -81,7 +81,7 @@ jobs:
           cd api
           docker build -t ankitsarkar31/backend-app:latest .
           trivy image --format table -o backend-image-report.html ankitsarkar31/backend-app:latest
-          docker push aankitsarkar31/backend-app:latest
+          docker push ankitsarkar31/backend-app:latest
 
       - name: Build, Scan, and Push Frontend Docker Image
         run: |
