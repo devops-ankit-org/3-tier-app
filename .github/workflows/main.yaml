@@ -1,0 +1,72 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+      
+      - name: Install Gitleaks
+        run: |
+          sudo apt-get update && sudo apt-get install gitleaks
+
+      - name: Frontend Compilation
+        working-directory: client
+        run: |
+          find . -name "*.js" -exec node --check {} +
+
+      - name: Backend Compilation
+        working-directory: api
+        run: |
+          find . -name "*.js" -exec node --check {} +
+
+      - name: GitLeaks Scan on Frontend
+        run: gitleaks detect --source ./client --exit-code 1
+
+      - name: GitLeaks Scan on Backend
+        run: gitleaks detect --source ./api --exit-code 1
+
+      - name: Set up SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          # Assuming you have a SonarCloud account and the necessary environment variables set
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=NodeJS-Project
+            -Dsonar.projectName=NodeJS-Project
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        run: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release /
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add - /
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list /
+          sudo apt-get update /
+          sudo apt-get install trivy /
+          trivy fs --format table -o fs-report.html . 
