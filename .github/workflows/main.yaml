@@ -42,13 +42,16 @@ jobs:
         run: gitleaks detect --source ./api --exit-code 1
 
       - name: Set up SonarQube
-        uses: sonarsource/sonarcloud-github-action@v1
+        uses: sonarsource/sonarqube-scan-action@master
         with:
           # Assuming you have a SonarCloud account and the necessary environment variables set
           projectBaseDir: .
           args: >
             -Dsonar.projectKey=NodeJS-Project
             -Dsonar.projectName=NodeJS-Project
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarcloud-github-action@v1
