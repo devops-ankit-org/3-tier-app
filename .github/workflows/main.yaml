@@ -61,5 +61,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Trivy FS Scan
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
         run: trivy fs --format table -o fs-report.html .
