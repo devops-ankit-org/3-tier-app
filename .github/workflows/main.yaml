@@ -63,8 +63,5 @@ jobs:
 
       - name: Run Trivy vulnerability scanner
         run: |
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add - /
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list /
-          sudo apt-get update /
-          sudo apt-get install trivy /
-          trivy fs --format table -o fs-report.html . 
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/scripts/install.sh | sh
+          sudo mv trivy /usr/local/bin/ 
