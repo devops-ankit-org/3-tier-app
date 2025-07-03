@@ -1,4 +1,3 @@
-
 # Stage 1: Build React App
 FROM node:22-alpine AS builder
 
@@ -23,10 +22,11 @@ FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # 🧾 Add custom nginx config (optional but usually required for SPA)
-# COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # 🌐 Expose port 80 for HTTP
 EXPOSE 80
 
 # 🚀 Start nginx
 CMD ["nginx", "-g", "daemon off;"]
+
