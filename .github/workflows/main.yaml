@@ -1,0 +1,55 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+
+      - name: Frontend Compilation
+        working-directory: client
+        run: |
+          find . -name "*.js" -exec node --check {} +
+
+      - name: Backend Compilation
+        working-directory: api
+        run: |
+          find . -name "*.js" -exec node --check {} +
+
+      - name: GitLeaks Scan on Frontend
+        run: gitleaks detect --source ./client --exit-code 1
+
+      - name: GitLeaks Scan on Backend
+        run: gitleaks detect --source ./api --exit-code 1
+
+      - name: Set up SonarQube
+        uses: sonarsource/sonarcloud-github-action@v1
+        with:
+          # Assuming you have a SonarCloud account and the necessary environment variables set
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=NodeJS-Project
+            -Dsonar.projectName=NodeJS-Project
+
+      - name: SonarQube Quality Gate Check
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          githubToken: ${{ secrets.SONAR_TOKEN }}  # Or your own PAT
+
+      - name: Trivy FS Scan
+        run: trivy fs --format table -o fs-report.html .
