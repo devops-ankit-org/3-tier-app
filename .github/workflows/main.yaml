@@ -23,9 +23,7 @@ jobs:
       
       - name: Install Gitleaks
         run: |
-          curl -sSfL https://github.com/zricethezav/gitleaks/releases/download/v8.11.0/gitleaks-linux-amd64 -o gitleaks
-          chmod +x gitleaks
-          sudo mv gitleaks /usr/local/bin/
+          sudo apt-get update && sudo apt-get install gitleaks
 
       - name: Frontend Compilation
         working-directory: client
