@@ -20,6 +20,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '23'
+      
+      - name: Install Gitleaks
+        run: |
+          curl -sSfL https://github.com/zricethezav/gitleaks/releases/download/v8.11.0/gitleaks-linux-amd64 -o gitleaks
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/
 
       - name: Frontend Compilation
         working-directory: client
