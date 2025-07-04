@@ -91,6 +91,6 @@ jobs:
           docker push ankitsarkar31/frontend-app:latest
 
       - name: Docker Compose Deploy
-        run: docker-compose up -d
+        run: docker compose up -d
 
       
